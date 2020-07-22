@@ -344,7 +344,7 @@ class CLI(with_metaclass(ABCMeta, object)):
                     options.inventory = [options.inventory]
 
                 # Ensure full paths when needed
-                options.inventory = [unfrackpath(opt, follow=False) if ',' not in opt else opt for opt in options.inventory]
+                options.inventory = [unfrackpath(opt, follow=False, if_exists=True) for opt in options.inventory]
             else:
                 options.inventory = C.DEFAULT_HOST_LIST
 

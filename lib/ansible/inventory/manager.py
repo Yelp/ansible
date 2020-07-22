@@ -219,8 +219,10 @@ class InventoryManager(object):
         for source in self._sources:
 
             if source:
-                if ',' not in source:
-                    source = unfrackpath(source, follow=False)
+                # only unfrack paths that are existing to prevent
+                # accidentally manipulating the argument intended for
+                # consumption by one of the inventory plugins
+                source = unfrackpath(source, follow=False, if_exists=True)
                 parse = self.parse_source(source, cache=cache)
                 if parse and not parsed:
                     parsed = True

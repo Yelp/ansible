@@ -28,17 +28,19 @@ from ansible.module_utils._text import to_bytes, to_native, to_text
 __all__ = ['unfrackpath', 'makedirs_safe']
 
 
-def unfrackpath(path, follow=True, basedir=None):
+def unfrackpath(path, follow=True, basedir=None, if_exists=False):
     '''
     Returns a path that is free of symlinks (if follow=True), environment variables, relative path traversals and symbols (~)
 
     :arg path: A byte or text string representing a path to be canonicalized
     :arg follow: A boolean to indicate of symlinks should be resolved or not
+    :arg if_exists: A boolean to indicate if all transformations should be
+        avoided in case the path does not exist
     :raises UnicodeDecodeError: If the canonicalized version of the path
         contains non-utf8 byte sequences.
     :rtype: A text string (unicode on pyyhon2, str on python3).
     :returns: An absolute path with symlinks, environment variables, and tilde
-        expanded.  Note that this does not check whether a path exists.
+        expanded.
 
     example::
         '$HOME/../../var/mail' becomes '/var/spool/mail'
@@ -55,6 +57,10 @@ def unfrackpath(path, follow=True, basedir=None):
 
     if not os.path.isabs(b_final_path):
         b_final_path = os.path.join(b_basedir, b_final_path)
+
+    if if_exists is True and os.path.exists(b_final_path) is False:
+        # transform the passed path only if it exist
+        return path
 
     if follow:
         b_final_path = os.path.realpath(b_final_path)
